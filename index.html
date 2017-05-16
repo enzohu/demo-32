@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ding-ajax</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        #btn {
+            margin: 0 auto;
+        }
+        ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 0;
+        }
+        img {
+            width: 300px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        <template>
+            <li><img src="https://unsplash.it/200/300/?random" alt=""></li>
+        </template>
+    </ul>
+    <button id="btn">加载更多···</button>
+    <script>
+        let btn = document.querySelector('#btn'),
+            ul = document.querySelector('ul'),
+            page = 0,
+            isArrive = true //状态锁，防止重复点击
+        btn.onclick = function(){
+            if(!isArrive){
+                return
+            }
+            isArrive = false
+            let xhr = new XMLHttpRequest()
+            xhr.open('get',`/loadmore?page=${page}`)
+            
+            xhr.send()
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState === 4){
+                    if(xhr.status >= 200 && xhr.status < 300){
+                        //console.log(xhr.response)
+                        let result = JSON.parse(xhr.response)
+                        if(result.length===0){
+                            btn.textContent = '就这么多了···'
+                            return
+                        }
+                        var fragment = document.createDocumentFragment()
+                        result.forEach(function(ele){
+                            let obj = JSON.parse(ele)
+                            // console.log(obj instanceof Array)
+                            // console.log(typeof obj)
+                            var node = document.createElement('li')
+                            var img = new Image()
+                            img.src = obj.url
+                            node.appendChild(img)
+                            fragment.appendChild(node)
+                        })
+                        ul.appendChild(fragment)
+                        isArrive = true
+                        page += 2
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@ var http = require('http')
 var fs = require('fs')
 var url = require('url')
 
-var port = process.env.PORT || 9988;
+var port = process.env.PORT || 7575;
 
 var server = http.createServer(function(req,res){
     var temp = url.parse(req.url,true)
@@ -44,4 +44,4 @@ var server = http.createServer(function(req,res){
         console.log(method+' '+ req.url)
 })
 server.listen(port)
-console.log('监听9988成功')
+console.log('监听7575成功')
